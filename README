@@ -1,0 +1,29 @@
+
+1. Leer mensajes desde el BOT - LISTO
+2. Detectar cual mensaje es un incidencia 
+    - Usuario
+    - equipo
+    - por ahora si le mensaje tiene una de estas palabras (incidencia, problema, ayudan)
+
+    Mejoras 0.5: asignar un tipo a la incidencia, con palabras del mensaje 
+      eje: 
+        Cliente => CRM
+        MessageBird => MessageBird
+        
+
+
+    Mejoras 1: Que el bot pregunta si es una incidencia para crearlo
+    Mejoras 2: Que el bot procese lenguaje natural
+
+3. Guardar estos incidentes
+    Mejoras: Guardar en Alguna BD
+
+4. Cerrar el incidente
+   - usar commando para cerrar incidencia
+   - Diga la causa y la solucion para cerrar el incidente
+
+   Mejoras: si lleva mas de 5 horas sin respuesta preguntar estado de incidente
+
+5. graficar reportes => opcional
+
+
