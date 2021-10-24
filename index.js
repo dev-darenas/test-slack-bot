@@ -1,7 +1,8 @@
-const SLACK_SIGNING_SECRET="71f19c16cfabf5d3e108ba199a9c04f6"
-const SLACK_BOT_TOKEN="xoxb-2652709298097-2664210436064-ThuhcDyPO7V4ayNqoXn6azwP"
-const SLACK_APP_TOKEN="xapp-1-A02JUFM9927-2640550146882-b605cb19d3d7525d9d4a8a8e6c4df83c88daf2a61e9696eb047bdd47d8edbaaf"
+const SLACK_SIGNING_SECRET=""
+const SLACK_BOT_TOKEN=""
+const SLACK_APP_TOKEN=""
 const { App } = require('@slack/bolt');
+const IncidentService = require('./services/incidentServices.js');
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
@@ -22,6 +23,7 @@ const app = new App({
 // Listens to incoming messages that contain "hello"
 app.message('hola santi', async ({ message, say }) => {
     // say() sends a message to the channel where the event was triggered
+    console.log(message);
     await say(`Hey there Santi <@${message.user}>!`);
 });
 
@@ -60,11 +62,36 @@ app.message('caricachupa cerrar', async ({ message, say }) => {
           channel: message.channel
             
         });
-    
+
+        // Call the conversations.history method using the built-in WebClient
+        const link = await app.client.chat.getPermalink({
+        // The token you used to initialize your app
+        token: SLACK_BOT_TOKEN,
+        // In a more realistic app, you may store ts data in a db
+        message_ts: result.messages[0].ts,
+        channel: message.channel            
+        });
+
+        await say({text:`<@${message.user}> Tu caso fue cerrado ${link.permalink}`,});
+
         // There should only be one result (stored in the zeroth index)
        
         // Print message text
         console.log(result);
+        console.log('p::::::::::::::::::::::::P');
+        console.log(link);
+
+        const incidentService = new IncidentService();
+
+        const closeIncident = await incidentService.closeIncident({ 
+            created_ts_id: result.messages[0].ts, 
+            close_user_slack: message.user, 
+            messages_slack: result.messages,
+
+         });
+
+         console.log(':::::::::::::::::::::::::::');
+         console.log(JSON.stringify(closeIncident));
 
         await say({text:`<@${message.user}> Caso cerrado`,thread_ts:threadTs, blocks : [
             {
@@ -132,11 +159,9 @@ app.message('caricachupa cerrar', async ({ message, say }) => {
         console.error(error);
       }
     
-
-    
-
-    
 });
+
+
 
 app.message('Sanco', async ({ message, say }) => {
     // say() sends a message to the channel where the event was triggered
@@ -265,7 +290,7 @@ app.view('view_1', async ({ ack, body, view, client , say}) => {
   
     // Message the user
     try {
-      await client.chat.postMessage({
+    let message =  await client.chat.postMessage({
         channel: 'C02JMB2RD62',
         text: ` <@${user}>! Creo esta incidencia desde el modal ${val}`,
         blocks: [
@@ -381,8 +406,36 @@ app.view('view_1', async ({ ack, body, view, client , say}) => {
                 }
         ]
       });
+      console.log(':::::::::::::::::::::::::::');
+      console.log(JSON.stringify(message));
         
+      const incidentService = new IncidentService();
+      let ts = message.message.ts;
+      let channel = message.channel;
+      let newuser = body.user.id;
+
+
+    // Call the conversations.history method using the built-in WebClient
+    const link = await app.client.chat.getPermalink({
+        // The token you used to initialize your app
+        token: SLACK_BOT_TOKEN,
+        // In a more realistic app, you may store ts data in a db
+        message_ts: ts,
+        channel: channel            
+        });
+
+
+      let newPermalink = link.permalink;
       
+      const createdIncident = await incidentService.createIncident({ 
+        newCreated_ts: ts, 
+        NewUser: newuser, 
+        NewPermalink: newPermalink,
+        NewChannel: channel
+     });
+
+      console.log(':::::::::::::::::::::::::::');
+      console.log(JSON.stringify(createdIncident));
     }
     catch (error) {
       console.error(error);
