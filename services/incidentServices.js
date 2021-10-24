@@ -6,9 +6,8 @@ class IncidentService {
     this.mongoDB = new MongoLib();
   }
 
-  async getIncidents({ tags }) {
-    const query = tags && { tags: { $in: tags } };
-    const incidents = await this.mongoDB.getAll(this.collection, query);
+  async getIncidents() {
+    const incidents = await this.mongoDB.getAll(this.collection);
     return incidents || [];
   }
 
