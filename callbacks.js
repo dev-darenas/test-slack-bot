@@ -114,10 +114,10 @@ const languageCallback = async ({ message, say, context, next }) => {
         blocks:  
         [
           {
-              "type": "header",
+              "type": "section",
               "text": {
                   "type": "mrkdwn",
-                  "text": "Detección de incidencia"
+                  "text": "*Detección de incidencia*"
               }
           },
           {
