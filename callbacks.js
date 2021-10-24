@@ -1,4 +1,5 @@
 const trackerLink = 'http://lalala.com'
+const IncidentService = require('./services/incidentServices.js');
 
 const modalCallback = async ({ ack, body, client, context }) => {
     // say() sends a message to the channel where the event was triggered
@@ -178,7 +179,7 @@ const viewIncidentCallback = async ({ ack, body, view, client, say}) => {
   
     // Message the user
     try {
-      await client.chat.postMessage({
+      let message = await client.chat.postMessage({
         channel,
         text: `<@${user}> creó esta incidencia.`,
         blocks: [
@@ -300,6 +301,32 @@ const viewIncidentCallback = async ({ ack, body, view, client, say}) => {
                     "type": "divider"
                 }
         ]
+      });
+
+      /// Guardar en mongo DB ////
+
+      const incidentService = new IncidentService();
+      let ts = message.message.ts;
+      let channel = message.channel;
+      let newuser = body.user.id;
+
+      // Call the conversations.history method using the built-in WebClient
+      const link = await app.client.chat.getPermalink({
+          // The token you used to initialize your app
+          token: SLACK_BOT_TOKEN,
+          // In a more realistic app, you may store ts data in a db
+          message_ts: ts,
+          channel: channel            
+          });
+
+
+        let newPermalink = link.permalink;
+        
+        const createdIncident = await incidentService.createIncident({ 
+          newCreated_ts: ts, 
+          NewUser: newuser, 
+          NewPermalink: newPermalink,
+          NewChannel: channel
       });
     }
     catch (error) {
@@ -452,6 +479,16 @@ const closeIncidentCallback = async ({ message, say, shortcut, client }) => {
               ]
             }
         ]});
+
+
+        const incidentService = new IncidentService();
+
+        const closeIncident = await incidentService.closeIncident({ 
+          created_ts_id: result.messages[0].ts, 
+          close_user_slack: message.user, 
+          messages_slack: result.messages,
+        });
+
       }
       catch (error) {
         console.error(error);

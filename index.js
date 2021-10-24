@@ -1,6 +1,7 @@
 require('dotenv').config()
 const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
 const { modalCallback, languageCallback, viewIncidentCallback, datePickerCallback, reactionCallback, plainTextInputCallback, closeIncidentCallback, closeActionCallback, selectInputCallback } = require('./callbacks');
+const IncidentService = require('./services/incidentServices.js');
 
 // Initializes your localhost app
 const receiver = new ExpressReceiver({ 
@@ -66,6 +67,11 @@ app.event('reaction_added', reactionCallback)
 receiver.router.get('/incidentes', (req, res) => {
   // You're working with an express req and res now.
    // res.send('yay!');
+
+  console.log("console!!")
+  const incidentService = new IncidentService();
+  console.log(JSON.stringify(incidentService.getIncidents()))
+
   res.render('incident/index.pug', { 
     incidents: [
       {
