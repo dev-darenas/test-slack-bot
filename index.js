@@ -30,8 +30,7 @@ app.message('Hilo', async ({ message, say }) => {
     var threadTs;
     if(message.thread_ts){
         threadTs = message.thread_ts; 
-    }
-    else{
+    }else{
         threadTs=message.ts;
     }
     console.log(JSON.stringify(message));
