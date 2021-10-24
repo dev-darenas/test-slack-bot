@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
+const { modalCallback, languageCallback, viewIncidentCallback, datePickerCallback, reactionCallback, plainTextInputCallback, closeIncidentCallback, closeActionCallback, selectInputCallback } = require('./callbacks');
 
 // Initializes your app with your bot token and signing secret
 
@@ -18,133 +19,30 @@ const app = new App({
   console.log('⚡️ Bolt app is running!');
 })();
 
-// Listens to incoming messages that contain "hello"
-// app.message('hello', async ({ message, say }) => {
-//     // say() sends a message to the channel where the event was triggered
-//     await say(`Hey there <@${message.user}>!`);
-// });
+app.message(/(incidencia|ayuda|problema).*/, languageCallback);
 
-// app.message('hola', async ({ message, say }) => {
-//     // say() sends a message to the channel where the event was triggered
-//     console.log(JSON.stringify(message));
+// *********
+// COMANDO /INCIDENCIA
+// *********
+app.command('/incidencia', modalCallback)
 
-//     await say(`Hola caricachupas <@${message.user}>!`);
-//     await say(`Hola caricachupas <@${message.channel}>!`);
-//     await say(`Hola caricachupas <@${message.channel_type}>!`);
-// });
+app.command('/cerrar-incidencia', closeIncidentCallback)
 
-app.message('pipe', async ({ message, say }) => {
-    // say() sends a message to the channel where the event was triggered
-    
-    await say(`Hola pipe <@${message.user}>!`);
-});
+app.shortcut('shortcut_close_incident', closeIncidentCallback)
 
-/*
-app.command('/incidencia', async ({ ack, body, client }) => {
-    // say() sends a message to the channel where the event was triggered
-    await ack();
+app.action('close_incident', closeActionCallback)
 
-    console.log(body.text)
+// *********
+// ACCIÓN: Ejecutar modal a partir de texto detectado
+// *********
+app.action('create_incident_action', modalCallback)
 
-    try {
-        // Call views.open with the built-in client
-        const result = await client.views.open({
-        // Pass a valid trigger_id within 3 seconds of receiving it
-        trigger_id: body.trigger_id,
-        // View payload
-        view: {
-            type: 'modal',
-            // View identifier
-            callback_id: 'view_1',
-            title: {
-            type: 'plain_text',
-            text: 'Modal title'
-            },
-            blocks: [
-            {
-                type: 'section',
-                text: {
-                type: 'mrkdwn',
-                text: 'Welcome to a modal with _blocks_'
-                },
-                accessory: {
-                type: 'button',
-                text: {
-                    type: 'plain_text',
-                    text: 'Click me!'
-                },
-                action_id: 'button_abc'
-                }
-            },
-            {
-                type: 'input',
-                block_id: 'input_c',
-                label: {
-                type: 'plain_text',
-                text: 'What are your hopes and dreams?'
-                },
-                element: {
-                type: 'plain_text_input',
-                action_id: 'dreamy_input',
-                multiline: true
-                }
-            }
-            ],
-            submit: {
-                type: 'plain_text',
-                text: 'Submit'
-            }
-        }
-        });
+app.view('view_incident', viewIncidentCallback)
 
-        console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
-});
-*/
-app.message(/(incidencia|ayuda|problema).*/, async ({ message, say }) => {
-    await say({
-    blocks:  [
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "INCIDENCIA!"
-			}
-		},
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": `Hola <@${message.user}>. Parece que quieres crear una incidencia.`
-			},
-			"accessory": {
-				"type": "button",
-				"text": {
-					"type": "plain_text",
-					"text": "Dale",
-					"emoji": true
-				},
-				"value": "click_me_123",
-				"action_id": "button-action"
-			}
-		},
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": `> ${message.text}`
-			}
-		}
-	],
-        text: `${message.text} <#${message.channel}>`
-    });
-});
+app.action('datepicker_remind', datePickerCallback)
 
-app.action('button-action', async ({ body, ack, say }) => {
-// Acknowledge the action
-    await ack();
-    await say(`Creada incidencia:
-    ${body.message.text}`);
-});
+app.action('select_incident_type', selectInputCallback)
+
+app.action('plain_text_input-action', plainTextInputCallback)
+
+app.event('reaction_added', reactionCallback)
