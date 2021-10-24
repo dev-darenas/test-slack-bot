@@ -1,17 +1,28 @@
-const SLACK_SIGNING_SECRET="72c54907b6c9077acee2683a12bf42ca"
-const SLACK_BOT_TOKEN="xoxb-2652709298097-2640443271139-O0Xa1mlKlBhwB14RhfQxTpsF"
-const SLACK_APP_TOKEN="xapp-1-A02JWJVS1PE-2664172813488-b1fdff1759dbdc74da9ad466313aafc4343d051535d933a13ad2d9157637ed92"
+const SLACK_SIGNING_SECRET=""
+const SLACK_BOT_TOKEN="xoxb-2652709298097-26"
+const SLACK_APP_TOKEN="xapp-1-A02JWJVS1PE-26"
 
-const { App, LogLevel } = require('@slack/bolt');
+const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
+
+const receiver = new ExpressReceiver({ 
+  signingSecret: SLACK_SIGNING_SECRET,
+  logLevel: LogLevel.DEBUG
+});
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
   token: SLACK_BOT_TOKEN,
-  signingSecret: SLACK_SIGNING_SECRET,
-  socketMode: true,
+  socketMode: false,
   appToken: SLACK_APP_TOKEN,
-  logLevel: LogLevel.DEBUG
+  logLevel: LogLevel.DEBUG,
+  receiver
 });
+
+const path = require('path');
+
+receiver.app.set('views', path.join(__dirname, 'views'));
+receiver.app.set('view engine', 'pug');
+//receiver.app.use(receiver.express.static(path.join(__dirname, 'public')))
 
 (async () => {
   // Start your app
@@ -343,4 +354,50 @@ app.view('view_incident', async ({ ack, body, view, client }) => {
 
 app.action('select_incident_type', async ({ body, ack, say }) => {
   await ack();
+});
+
+// ROUTES //
+// Other web requests are methods on receiver.router
+receiver.router.get('/incidentes', (req, res) => {
+  // You're working with an express req and res now.
+   // res.send('yay!');
+  res.render('incident/index.pug', { 
+    incidents: [
+      {
+        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
+        author: 'Daniel Arenas',
+        status: 'closed',
+        type: 'CRM',
+        date: '2021/10/20'
+      },
+      {
+        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
+        author: 'Daniel Arenas',
+        status: 'closed',
+        type: 'CRM',
+        date: '2021/10/21'
+      },
+      {
+        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
+        author: 'Daniel Arenas',
+        status: 'in_progress',
+        type: 'Core',
+        date: '2021/10/22'
+      },
+      {
+        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
+        author: 'Daniel Arenas',
+        status: 'started',
+        type: 'Core',
+        date: '2021/10/22'
+      },
+      {
+        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
+        author: 'Daniel Arenas',
+        status: 'started',
+        type: 'Core',
+        date: '2021/10/23'
+      }
+    ]
+  });
 });

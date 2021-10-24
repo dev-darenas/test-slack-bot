@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/bolt": "^3.7.0"
+    "@slack/bolt": "^3.7.0",
+    "express": "^4.17.1",
+    "pug": "^3.0.2",
+    "tailwindcss": "^2.2.17"
   }
 }
