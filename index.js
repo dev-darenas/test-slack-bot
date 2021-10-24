@@ -1,39 +1,45 @@
-const SLACK_SIGNING_SECRET="72c54907b6c9077acee2683a12bf42ca"
-const SLACK_BOT_TOKEN="xoxb-2652709298097-2640443271139-5pE9IW6YajXq8dzgFkjQIX36"
-const SLACK_APP_TOKEN="xapp-1-A02JWJVS1PE-2640452011139-eac608a1c6a872432f352a5358a8279beb503626fce4bee50b620395497c5fd3"
-
-const { App } = require('@slack/bolt');
+require('dotenv').config()
+const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
 
 // Initializes your app with your bot token and signing secret
+
 const app = new App({
-  token: SLACK_BOT_TOKEN,
-  signingSecret: SLACK_SIGNING_SECRET,
+  token: process.env.SLACK_BOT_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
   socketMode: true,
-  appToken: SLACK_APP_TOKEN 
+  appToken: process.env.SLACK_APP_TOKEN,
+  logLevel: LogLevel.DEBUG
 });
 
 (async () => {
   // Start your app
-  await app.start(process.env.PORT || 3000);
+  await app.start(process.env.PORT || 10000);
 
   console.log('⚡️ Bolt app is running!');
 })();
 
 // Listens to incoming messages that contain "hello"
-app.message('hello', async ({ message, say }) => {
+// app.message('hello', async ({ message, say }) => {
+//     // say() sends a message to the channel where the event was triggered
+//     await say(`Hey there <@${message.user}>!`);
+// });
+
+// app.message('hola', async ({ message, say }) => {
+//     // say() sends a message to the channel where the event was triggered
+//     console.log(JSON.stringify(message));
+
+//     await say(`Hola caricachupas <@${message.user}>!`);
+//     await say(`Hola caricachupas <@${message.channel}>!`);
+//     await say(`Hola caricachupas <@${message.channel_type}>!`);
+// });
+
+app.message('pipe', async ({ message, say }) => {
     // say() sends a message to the channel where the event was triggered
-    await say(`Hey there <@${message.user}>!`);
+    
+    await say(`Hola pipe <@${message.user}>!`);
 });
 
-app.message('hola', async ({ message, say }) => {
-    // say() sends a message to the channel where the event was triggered
-    console.log(JSON.stringify(message));
-
-    await say(`Hola caricachupas <@${message.user}>!`);
-    await say(`Hola caricachupas <@${message.channel}>!`);
-    await say(`Hola caricachupas <@${message.channel_type}>!`);
-});
-
+/*
 app.command('/incidencia', async ({ ack, body, client }) => {
     // say() sends a message to the channel where the event was triggered
     await ack();
@@ -96,32 +102,49 @@ app.command('/incidencia', async ({ ack, body, client }) => {
     console.error(error);
   }
 });
-
-app.message('block-caricachupa', async ({ message, say }) => {
+*/
+app.message(/(incidencia|ayuda|problema).*/, async ({ message, say }) => {
     await say({
-    blocks: [
-        {
-        "type": "section",
-        "text": {
-            "type": "mrkdwn",
-            "text": `Hey there <@${message.user}>!`
-        },
-        "accessory": {
-            "type": "button",
-            "text": {
-            "type": "plain_text",
-            "text": "Click Me"
-            },
-            "action_id": "button_click"
-        }
-        }
-    ],
-        text: `Hey there <@${message.user}>!`
+    blocks:  [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "INCIDENCIA!"
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": `Hola <@${message.user}>. Parece que quieres crear una incidencia.`
+			},
+			"accessory": {
+				"type": "button",
+				"text": {
+					"type": "plain_text",
+					"text": "Dale",
+					"emoji": true
+				},
+				"value": "click_me_123",
+				"action_id": "button-action"
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": `> ${message.text}`
+			}
+		}
+	],
+        text: `${message.text} <#${message.channel}>`
     });
 });
 
-app.action('button_click', async ({ body, ack, say }) => {
+app.action('button-action', async ({ body, ack, say }) => {
 // Acknowledge the action
     await ack();
-    await say(`<@${body.user.id}> clicked the button`);
+    await say(`Creada incidencia:
+    ${body.message.text}`);
 });
