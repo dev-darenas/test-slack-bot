@@ -144,7 +144,6 @@ const modalCallback = async (params) => {
 }
 
 const languageCallback = async ({ message, say, context, next }) => {
-  console.log('LANG')
   await say({
     blocks: [
       {
@@ -169,7 +168,7 @@ const languageCallback = async ({ message, say, context, next }) => {
           },
           value: 'create',
           action_id: 'create_incident_action',
-        },
+        }
       },
       {
         type: 'section',
@@ -540,6 +539,12 @@ const closeActionCallback = async ({ body, ack, say, message }) => {
   })
 }
 
+const welcomeCallback = async ({ say, message }) => {
+  await say(
+    `Que más Hauser <@${message.user}>, espero integrame con la mejor actitud para hacer un buen trabajo colaborativo, poder crecer en esta gran compañía ~y ganar el primer puesto~ y contribuir con todo.`
+  )
+}
+
 const plainTextInputCallback = async () => {}
 
 const selectInputCallback = async ({ body, ack, say }) => {
@@ -556,4 +561,5 @@ module.exports = {
   closeIncidentCallback,
   closeActionCallback,
   selectInputCallback,
+  welcomeCallback
 }

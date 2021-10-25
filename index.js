@@ -1,6 +1,15 @@
 require('dotenv').config()
 const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
-const { modalCallback, languageCallback, viewIncidentCallback, datePickerCallback, reactionCallback, plainTextInputCallback, closeIncidentCallback, closeActionCallback, selectInputCallback } = require('./callbacks');
+const { modalCallback, 
+    languageCallback, 
+    viewIncidentCallback, 
+    datePickerCallback, 
+    reactionCallback, 
+    plainTextInputCallback, 
+    closeIncidentCallback, 
+    closeActionCallback, 
+    selectInputCallback, 
+    welcomeCallback } = require('./callbacks');
 const IncidentService = require('./services/incidentServices.js');
 
 // Initializes your localhost app
@@ -35,6 +44,8 @@ receiver.app.set('view engine', 'pug');
 })();
 
 app.message(/(incidencia|ayuda|problema).*/, languageCallback);
+
+app.message(/(hola|hi|hello).* bot/i, welcomeCallback);
 
 // *********
 // COMANDO /INCIDENCIA
