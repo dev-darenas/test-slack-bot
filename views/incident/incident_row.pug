@@ -1,6 +1,8 @@
 tr
-  th(scope='row')= incident.date
-  td= incident.author
-  td= incident.type
-  td= incident.status
-  td= incident.permalink
+  th(scope='row')= incident.createdAt
+  td= incident.created_user
+  td= incident.channel
+  td= incident.messages === undefined ? '' : incident.messages[0].text
+  td
+    a(href=`${incident.permalink}` target='_blank')
+                                                   = incident.permalink
