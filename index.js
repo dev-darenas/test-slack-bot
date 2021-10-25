@@ -64,51 +64,17 @@ app.event('reaction_added', reactionCallback)
 
 // ROUTES //
 // Other web requests are methods on receiver.router
-receiver.router.get('/incidentes', (req, res) => {
+receiver.router.get('/incidentes', async (req, res) => {
   // You're working with an express req and res now.
    // res.send('yay!');
 
   console.log("console!!")
   const incidentService = new IncidentService();
-  console.log(JSON.stringify(incidentService.getIncidents()))
+  const incidents = await incidentService.getIncidents();
+  
+  console.log(JSON.stringify(incidents))
 
   res.render('incident/index.pug', { 
-    incidents: [
-      {
-        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
-        author: 'Daniel Arenas',
-        status: 'closed',
-        type: 'CRM',
-        date: '2021/10/20'
-      },
-      {
-        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
-        author: 'Daniel Arenas',
-        status: 'closed',
-        type: 'CRM',
-        date: '2021/10/21'
-      },
-      {
-        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
-        author: 'Daniel Arenas',
-        status: 'in_progress',
-        type: 'Core',
-        date: '2021/10/22'
-      },
-      {
-        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
-        author: 'Daniel Arenas',
-        status: 'started',
-        type: 'Core',
-        date: '2021/10/22'
-      },
-      {
-        permalink: 'https://teamfire-4.slack.com/archives/C02JDT4U615/p1635116640010800',
-        author: 'Daniel Arenas',
-        status: 'started',
-        type: 'Core',
-        date: '2021/10/23'
-      }
-    ]
+    incidents: incidents
   });
 });
