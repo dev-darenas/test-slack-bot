@@ -18,7 +18,7 @@ const app = new App({
   socketMode: true,
   appToken: process.env.SLACK_APP_TOKEN,
   logLevel: LogLevel.DEBUG,
-//   receiver
+  //receiver
 });
 
 const path = require('path');

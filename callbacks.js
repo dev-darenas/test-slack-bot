@@ -1,3 +1,4 @@
+require('dotenv').config()
 const trackerLink = 'http://lalala.com'
 const IncidentService = require('./services/incidentServices.js')
 
@@ -348,9 +349,9 @@ const viewIncidentCallback = async ({ ack, body, view, client, say }) => {
     let newuser = body.user.id
 
     // Call the conversations.history method using the built-in WebClient
-    const link = await app.client.chat.getPermalink({
+    const link = await client.chat.getPermalink({
       // The token you used to initialize your app
-      token: SLACK_BOT_TOKEN,
+      token: process.env.SLACK_BOT_TOKEN,
       // In a more realistic app, you may store ts data in a db
       message_ts: ts,
       channel: channel,
