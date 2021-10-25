@@ -23,11 +23,38 @@ const modalCallback = async ({ ack, body, client, context }) => {
             },
             blocks: [
               {
-                type: 'section',
-                block_id: 'block_incident',
+                type: "section",
+                block_id: "channel_block",
                 text: {
                   type: "mrkdwn",
-                  text: channel
+                  text: "Selecciona el canal"
+                },
+                accessory: {
+                  action_id: "select_channel",
+                  type: "static_select",
+                  placeholder: {
+                    type: "plain_text",
+                    text: "Selecciona un item",
+                    emoji: true
+                  },
+                  options: [
+                    {
+                      text: {
+                        type: "plain_text",
+                        text: channel.name,
+                        emoji: true
+                      },
+                      value: channel.id
+                    }
+                  ],
+                  initial_option: {
+                      text: {
+                        type: "plain_text",
+                        text: channel.name,
+                        emoji: true
+                      },
+                      value: channel.id
+                    }
                 }
               },
               {
@@ -162,7 +189,10 @@ const viewIncidentCallback = async ({ ack, body, view, client, say}) => {
     const val = view['state']['values']['block_incident']['incident_input']['value'];
     const type = view['state']['values']['incident_type_block']['select_incident_type']['selected_option']?.value
     const user = body['user']['id'];
-    const channel = body.channel.id
+    const channel = {
+      name: view.state.values.channel_block.select_channel.selected_option.text.text,
+      id: view.state.values.channel_block.select_channel.selected_option.value
+    }
   
     // Message to send user
     let msg = '';
@@ -179,7 +209,7 @@ const viewIncidentCallback = async ({ ack, body, view, client, say}) => {
     // Message the user
     try {
       await client.chat.postMessage({
-        channel,
+        channel: channel.id,
         text: `<@${user}> creó esta incidencia.`,
         blocks: [
                 {
